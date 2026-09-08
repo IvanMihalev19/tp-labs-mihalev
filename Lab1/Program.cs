@@ -29,6 +29,7 @@ namespace Lab1
                 case 1: Task1(); break;
                 case 2: Task2(); break;
                 case 3: Task3(); break;
+                case 4: Task4(); break;
             }
         }
         static void Task1()
@@ -108,6 +109,42 @@ namespace Lab1
 
             double a = Math.Sqrt(underSqrt) - Math.Exp(Math.Log(x) / Math.Log(5));
             Console.WriteLine($"A = {a}");
+        }
+        static void Task4()
+        {
+            Console.Write("Введите x (в радианах): ");
+            if (!double.TryParse(Console.ReadLine(), NumberStyles.Float, CultureInfo.InvariantCulture, out double x))
+            {
+                Console.WriteLine("Ошибка: введите вещественное число.");
+                return;
+            }
+
+            const double eps = 1e-6;
+            var (sum, terms) = TaylorCos(x, eps);
+
+            Console.WriteLine($"Ряд Тейлора: {sum}");
+            Console.WriteLine($"Math.Cos:     {Math.Cos(x)}");
+            Console.WriteLine($"Членов ряда:  {terms}");
+        }
+
+        static (double sum, int terms) TaylorCos(double x, double eps)
+        {
+            double sum = 0;
+            double term = 1;
+            int n = 0;
+            int terms = 0;
+            int sign = 1;
+
+            while (Math.Abs(term) > eps)
+            {
+                sum += sign * term;
+                terms++;
+                term *= x * x / ((n + 1.0) * (n + 2.0));
+                n += 2;
+                sign = -sign;
+            }
+
+            return (sum, terms);
         }
 
 
