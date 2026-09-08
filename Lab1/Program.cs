@@ -28,6 +28,7 @@ namespace Lab1
             {
                 case 1: Task1(); break;
                 case 2: Task2(); break;
+                case 3: Task3(); break;
             }
         }
         static void Task1()
@@ -77,6 +78,36 @@ namespace Lab1
                 b = next;
             }
             return result;
+        }
+        static void Task3()
+        {
+            Console.Write("Введите x: ");
+            if (!double.TryParse(Console.ReadLine(), NumberStyles.Float, CultureInfo.InvariantCulture, out double x))
+            {
+                Console.WriteLine("Ошибка: введите вещественное число (используйте точку).");
+                return;
+            }
+
+            if (x <= 0)
+            {
+                Console.WriteLine("Ошибка: x должен быть > 0 (логарифм по основанию 5).");
+                return;
+            }
+            if (Math.Abs(x + 3) < 1e-12)
+            {
+                Console.WriteLine("Ошибка: деление на ноль (x = -3).");
+                return;
+            }
+
+            double underSqrt = Math.Cos(x - 32) * (x - 3) / (x + 3);
+            if (underSqrt < 0)
+            {
+                Console.WriteLine("Ошибка: подкоренное выражение отрицательное.");
+                return;
+            }
+
+            double a = Math.Sqrt(underSqrt) - Math.Exp(Math.Log(x) / Math.Log(5));
+            Console.WriteLine($"A = {a}");
         }
 
 
