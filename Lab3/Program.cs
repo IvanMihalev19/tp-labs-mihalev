@@ -127,3 +127,48 @@ class Program
             Console.WriteLine($"Ошибка при чтении: {ex.Message}");
         }
     }
+    static Encoding? ChooseEncoding()
+    {
+        Console.WriteLine();
+        Console.WriteLine("Выберите кодировку:");
+        Console.WriteLine("  1 — UTF-8");
+        Console.WriteLine("  2 — Windows-1251");
+        Console.WriteLine("  3 — CP866");
+        Console.Write("Ваш выбор: ");
+
+        string? choice = Console.ReadLine()?.Trim();
+
+        switch (choice)
+        {
+            case "1":
+                return Encoding.UTF8;
+            case "2":
+                return Encoding.GetEncoding(1251);
+            case "3":
+                return Encoding.GetEncoding(866);
+            default:
+                Console.WriteLine("Неверный выбор кодировки.");
+                return null;
+        }
+    }
+}
+
+static class FileViewer
+{
+
+    public static string ReadAllText(string path, Encoding encoding)
+    {
+        using var reader = new StreamReader(path, encoding, detectEncodingFromByteOrderMarks: true);
+        return reader.ReadToEnd();
+    }
+
+    public static IEnumerable<string> ReadLines(string path, Encoding encoding)
+    {
+        using var reader = new StreamReader(path, encoding, detectEncodingFromByteOrderMarks: true);
+        string? line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            yield return line;
+        }
+    }
+}
