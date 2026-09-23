@@ -84,4 +84,32 @@ public abstract class Component
         public override string GetSpecification()
             => $"{CapacityGb} ГБ {_type}-{SpeedMhz}";
     }
+    public class Storage : Component
+    {
+        private readonly int _capacityGb;
+        private readonly string _driveType;
+        private readonly int _readSpeedMbs;
+
+        public int CapacityGb => _capacityGb;
+        public string DriveType => _driveType;
+        public int ReadSpeedMbs => _readSpeedMbs;
+
+        public Storage(string name, decimal price, double powerWatts, int capacityGb, string driveType, int readSpeedMbs)
+            : base(name, price, powerWatts)
+        {
+            if (capacityGb <= 0)
+                throw new ArgumentOutOfRangeException(nameof(capacityGb), "Объём накопителя должен быть положительным");
+            if (string.IsNullOrWhiteSpace(driveType))
+                throw new ArgumentException("Тип накопителя не может быть пустым", nameof(driveType));
+            if (readSpeedMbs <= 0)
+                throw new ArgumentOutOfRangeException(nameof(readSpeedMbs), "Скорость чтения должна быть положительной");
+
+            _capacityGb = capacityGb;
+            _driveType = driveType.Trim().ToUpperInvariant();
+            _readSpeedMbs = readSpeedMbs;
+        }
+
+        public override string GetSpecification()
+            => $"{CapacityGb} ГБ {_driveType}, чтение {ReadSpeedMbs} МБ/с";
+    }
 }
