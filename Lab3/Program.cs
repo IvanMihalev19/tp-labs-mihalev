@@ -73,3 +73,57 @@ class Program
         Console.WriteLine("затем откройте его сначала в Windows-1251 (корректно),");
         Console.WriteLine("потом в UTF-8 (кракозябры) — и наоборот.");
     }
+    static void ViewFile()
+    {
+        Console.WriteLine();
+        Console.Write("Введите полный путь к файлу: ");
+        string? path = Console.ReadLine()?.Trim();
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            Console.WriteLine("Путь не может быть пустым.");
+            return;
+        }
+
+        // Убираем кавычки, если пользователь скопировал путь с ними
+        path = path.Trim('"', '\'');
+
+        if (!File.Exists(path))
+        {
+            Console.WriteLine($"Ошибка: файл не найден — «{path}»");
+            return;
+        }
+
+        Encoding? encoding = ChooseEncoding();
+        if (encoding is null)
+            return;
+
+        try
+        {
+            string content = FileViewer.ReadAllText(path, encoding);
+
+            Console.WriteLine();
+            Console.WriteLine("---------- Содержимое файла ----------");
+            Console.WriteLine(content);
+            Console.WriteLine("--------------------------------------");
+
+            var info = new FileInfo(path);
+            Console.WriteLine();
+            Console.WriteLine($"Файл: {info.FullName}");
+            Console.WriteLine($"Размер: {info.Length} байт");
+            Console.WriteLine($"Кодировка: {encoding.EncodingName} (CodePage {encoding.CodePage})");
+            Console.WriteLine($"Дата изменения: {info.LastWriteTime}");
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Console.WriteLine("Ошибка: нет прав на чтение файла.");
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"Ошибка ввода-вывода: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при чтении: {ex.Message}");
+        }
+    }
