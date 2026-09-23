@@ -56,4 +56,32 @@ public abstract class Component
         public override string GetSpecification()
             => $"{Cores} ядер @ {FrequencyGHz:F1} ГГц";
     }
+    public class Memory : Component
+    {
+        private readonly int _capacityGb;
+        private readonly string _type;
+        private readonly int _speedMhz;
+
+        public int CapacityGb => _capacityGb;
+        public string Type => _type;
+        public int SpeedMhz => _speedMhz;
+
+        public Memory(string name, decimal price, double powerWatts, int capacityGb, string type, int speedMhz)
+            : base(name, price, powerWatts)
+        {
+            if (capacityGb <= 0)
+                throw new ArgumentOutOfRangeException(nameof(capacityGb), "Объём памяти должен быть положительным");
+            if (string.IsNullOrWhiteSpace(type))
+                throw new ArgumentException("Тип памяти не может быть пустым", nameof(type));
+            if (speedMhz <= 0)
+                throw new ArgumentOutOfRangeException(nameof(speedMhz), "Частота памяти должна быть положительной");
+
+            _capacityGb = capacityGb;
+            _type = type.Trim().ToUpperInvariant();
+            _speedMhz = speedMhz;
+        }
+
+        public override string GetSpecification()
+            => $"{CapacityGb} ГБ {_type}-{SpeedMhz}";
+    }
 }
