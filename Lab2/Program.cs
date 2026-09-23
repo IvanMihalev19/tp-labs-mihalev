@@ -143,4 +143,70 @@ public abstract class Component
                    $"стоимость {TotalPrice:C}, энергопотребление {TotalPowerConsumption:F0} Вт";
         }
     }
+    public class Program
+    {
+        public static void Main()
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            var cpu1 = new Processor("AMD Ryzen 7 7800X3D", 34_990m, 120, 8, 4.2);
+            var cpu2 = new Processor("Intel Core i5-14600K", 27_500m, 125, 14, 3.5);
+
+            var ram1 = new Memory("Kingston Fury Beast", 8_990m, 5, 32, "DDR5", 6000);
+            var ram2 = new Memory("Corsair Vengeance", 5_490m, 4, 16, "DDR4", 3200);
+
+            var ssd = new Storage("Samsung 990 PRO", 12_490m, 6.5, 2000, "SSD", 7450);
+            var hdd = new Storage("Seagate Barracuda", 4_990m, 8, 4000, "HDD", 190);
+
+            List<Component> allComponents = [cpu1, cpu2, ram1, ram2, ssd, hdd];
+
+            Console.WriteLine("=== Все компоненты (полиморфный вывод) ===");
+            foreach (Component c in allComponents)
+            {
+                Console.WriteLine(c);
+            }
+
+            var pc1 = new Computer("Игровой ПК");
+            pc1.AddComponent(cpu1);
+            pc1.AddComponent(ram1);
+            pc1.AddComponent(ssd);
+
+            var pc2 = new Computer("Офисный ПК");
+            pc2.AddComponent(cpu2);
+            pc2.AddComponent(ram2);
+            pc2.AddComponent(hdd);
+
+            Console.WriteLine("\n=== Сборки ===");
+            Console.WriteLine(pc1);
+            Console.WriteLine(pc2);
+
+            Console.WriteLine("\n=== Детализация сборки «Игровой ПК» ===");
+            foreach (Component c in pc1.Components)
+                Console.WriteLine($"  • {c}");
+
+            Console.WriteLine($"\nИтоговая стоимость игрового ПК: {pc1.TotalPrice:C}");
+            Console.WriteLine($"Суммарное энергопотребление: {pc1.TotalPowerConsumption:F0} Вт");
+
+            Console.WriteLine("\n=== Проверка инкапсуляции (ожидаются исключения) ===");
+            try
+            {
+                var bad = new Processor("Bad CPU", -1000, 100, 8, 3.5);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine($"Поймано: {ex.Message}");
+            }
+
+            try
+            {
+                var bad2 = new Memory("Bad RAM", 5000, 5, 0, "DDR5", 6000);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Console.WriteLine($"Поймано: {ex.Message}");
+            }
+
+            Console.WriteLine("\nГотово.");
+        }
+    }
 }
