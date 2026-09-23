@@ -112,4 +112,35 @@ public abstract class Component
         public override string GetSpecification()
             => $"{CapacityGb} ГБ {_driveType}, чтение {ReadSpeedMbs} МБ/с";
     }
+    public class Computer
+    {
+        private readonly List<Component> _components = new();
+        private readonly string _name;
+
+        public string Name => _name;
+        public IReadOnlyList<Component> Components => _components.AsReadOnly();
+
+        public Computer(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Название сборки не может быть пустым", nameof(name));
+            _name = name.Trim();
+        }
+
+        public void AddComponent(Component component)
+        {
+            if (component is null)
+                throw new ArgumentNullException(nameof(component));
+            _components.Add(component);
+        }
+        public decimal TotalPrice => _components.Sum(c => c.Price);
+
+        public double TotalPowerConsumption => _components.Sum(c => c.PowerConsumption);
+
+        public override string ToString()
+        {
+            return $"Сборка «{_name}»: {_components.Count} компонентов, " +
+                   $"стоимость {TotalPrice:C}, энергопотребление {TotalPowerConsumption:F0} Вт";
+        }
+    }
 }
