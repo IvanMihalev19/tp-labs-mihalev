@@ -35,3 +35,66 @@ if (Math.Abs(piSeq - Math.PI) < 0.001 && Math.Abs(piPar - Math.PI) < 0.001)
     Console.WriteLine("\nОбе версии дают корректный результат (в пределах статистической погрешности).");
 else
     Console.WriteLine("\nВнимание: одна из версий дала слишком большую ошибку.");
+
+static double CalculatePiSequential(long totalPoints)
+{
+    var rnd = new Random(42);
+    long hits = 0;
+
+    for (long i = 0; i < totalPoints; i++)
+    {
+        double x = rnd.NextDouble();
+        double y = rnd.NextDouble();
+        if (x * x + y * y <= 1.0)
+            hits++;
+    }
+
+    return 4.0 * hits / totalPoints;
+}
+
+static double CalculatePiParallel(long totalPoints, int threadCount)
+{
+    if (threadCount == 1)
+        return CalculatePiSequential(totalPoints);
+
+    long pointsPerThread = totalPoints / threadCount;
+    long remainder = totalPoints % threadCount;
+
+    var threads = new Thread[threadCount];
+    var hits = new long[threadCount];
+
+    for (int t = 0; t < threadCount; t++)
+    {
+        int threadIndex = t;
+        long count = pointsPerThread + (threadIndex < remainder ? 1 : 0);
+        int seed = 42 + threadIndex * 1000;
+
+        threads[t] = new Thread(() =>
+        {
+            var rnd = new Random(seed);
+            long localHits = 0;
+
+            for (long i = 0; i < count; i++)
+            {
+                double x = rnd.NextDouble();
+                double y = rnd.NextDouble();
+                if (x * x + y * y <= 1.0)
+                    localHits++;
+            }
+
+            hits[threadIndex] = localHits;
+        });
+    }
+
+    foreach (var th in threads)
+        th.Start();
+
+    foreach (var th in threads)
+        th.Join();
+
+    long totalHits = 0;
+    foreach (var h in hits)
+        totalHits += h;
+
+    return 4.0 * totalHits / totalPoints;
+}
