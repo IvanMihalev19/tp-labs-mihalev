@@ -39,15 +39,16 @@ Console.WriteLine($"Медианная сумма: {sorted[sorted.Count / 2]}  (
 
 // --- 5. Сумма покупок каждого покупателя ---
 sw.Restart();
-var totals = new List<(string Buyer, long Total)>();
-foreach (string b in unique)
+var totalsDict = new Dictionary<string, long>();
+for (int i = 0; i < buyers.Count; i++)
 {
-    long total = 0;
-    for (int i = 0; i < buyers.Count; i++)      // УЗКОЕ МЕСТО №4: O(n·m)
-        if (buyers[i] == b)
-            total += amounts[i];
-    totals.Add((b, total));
+    if (totalsDict.TryGetValue(buyers[i], out long total))
+        totalsDict[buyers[i]] = total + amounts[i];
+    else
+        totalsDict[buyers[i]] = amounts[i];
 }
-Console.WriteLine($"Максимум потратил: {totals.MaxBy(t => t.Total).Buyer}  ({sw.ElapsedMilliseconds} мс)");
+
+var maxBuyer = totalsDict.MaxBy(kv => kv.Value).Key;
+Console.WriteLine($"Максимум потратил: {maxBuyer}  ({sw.ElapsedMilliseconds} мс)");
 
 Console.WriteLine($"ИТОГО: {swTotal.ElapsedMilliseconds} мс");
