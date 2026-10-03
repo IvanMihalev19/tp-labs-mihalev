@@ -22,11 +22,13 @@ Console.WriteLine($"Уникальных покупателей: {unique.Count} 
 
 // --- 3. Текстовый отчёт ---
 sw.Restart();
-string report = "";
+var sb = new StringBuilder(buyers.Count * 20);
 for (int i = 0; i < buyers.Count; i++)
 {
-    report += buyers[i] + ";" + amounts[i] + Environment.NewLine;   // УЗКОЕ МЕСТО №2
+    sb.Append(buyers[i]).Append(';')
+      .Append(amounts[i]).AppendLine();   // УЗКОЕ МЕСТО №2
 }
+string report = sb.ToString();
 Console.WriteLine($"Отчёт: {report.Length} символов  ({sw.ElapsedMilliseconds} мс)");
 
 // --- 4. Сортировка сумм ---
