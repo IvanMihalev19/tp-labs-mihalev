@@ -67,6 +67,11 @@ async Task HandleClientAsync(TcpClient tcp)
                 await writer.WriteLineAsync($"*** Онлайн ({clients.Count}): {list} ***");
                 continue;
             }
+            if (line.StartsWith("/w ", StringComparison.OrdinalIgnoreCase))
+            {
+                await HandlePrivateAsync(nick!, line, writer);
+                continue;
+            }
         }
     }
     catch (IOException) { }
@@ -89,5 +94,29 @@ async Task BroadcastAsync(string message)
     {
         try { await kv.Value.WriteLineAsync(message); }
         catch (IOException) { }
+    }
+}
+async Task HandlePrivateAsync(string from, string line, StreamWriter senderWriter)
+{
+    string[] parts = line.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
+    if (parts.Length < 3)
+    {
+        await senderWriter.WriteLineAsync("*** Использование: /w ник текст ***");
+        return;
+    }
+
+    string targetNick = parts[1];
+    string text = parts[2];
+
+    if (clients.TryGetValue(targetNick, out var targetWriter))
+    {
+        string msgToTarget = $"[{DateTime.Now:HH:mm:ss}] (личное от {from}): {text}";
+        string msgToSender = $"[{DateTime.Now:HH:mm:ss}] (личное для {targetNick}): {text}";
+        try { await targetWriter.WriteLineAsync(msgToTarget); } catch { }
+        try { await senderWriter.WriteLineAsync(msgToSender); } catch { }
+    }
+    else
+    {
+        await senderWriter.WriteLineAsync($"*** Пользователь '{targetNick}' не найден ***");
     }
 }
