@@ -5,11 +5,25 @@ using System.Text;
 
 const int Port = 5555;
 
+var logLock = new object();
+const string LogFile = "chat.log";
+
+void Log(string message)
+{
+    string line = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}";
+    Console.WriteLine(line);
+    lock (logLock)
+    {
+        try { File.AppendAllText(LogFile, line + Environment.NewLine, Encoding.UTF8); }
+        catch { }
+    }
+}
+
 var clients = new ConcurrentDictionary<string, StreamWriter>(StringComparer.OrdinalIgnoreCase);
 
 var listener = new TcpListener(IPAddress.Any, Port);
 listener.Start();
-Console.WriteLine($"Сервер запущен на порту {Port}. Ctrl+C — остановка.");
+Log($"Сервер запущен на порту {Port}. Ctrl+C — остановка.");
 
 while (true)
 {
@@ -48,7 +62,7 @@ async Task HandleClientAsync(TcpClient tcp)
             await writer.WriteLineAsync("ERROR Ник уже занят. Введите другой:");
         }
 
-        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {nick} подключился ({endpoint})");
+        Log($"[{DateTime.Now:HH:mm:ss}] {nick} подключился ({endpoint})");
         await BroadcastAsync($"*** {nick} вошёл в чат ***");
 
         string? line;
@@ -59,7 +73,7 @@ async Task HandleClientAsync(TcpClient tcp)
             if (line.Equals("/exit", StringComparison.OrdinalIgnoreCase)) break;
 
             string msg = $"[{DateTime.Now:HH:mm:ss}] {nick}: {line}";
-            Console.WriteLine(msg);
+            Log(msg);
             await BroadcastAsync(msg);
             if (line.Equals("/list", StringComparison.OrdinalIgnoreCase))
             {
@@ -80,7 +94,7 @@ async Task HandleClientAsync(TcpClient tcp)
         if (nick != null)
         {
             clients.TryRemove(nick, out _);
-            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {nick} отключился");
+            Log($"[{DateTime.Now:HH:mm:ss}] {nick} отключился");
             await BroadcastAsync($"*** {nick} покинул чат ***");
         }
         try { writer?.Dispose(); } catch { }
