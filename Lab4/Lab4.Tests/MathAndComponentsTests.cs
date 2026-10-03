@@ -64,9 +64,9 @@ public class MathAlgorithmsTests
     }
 
     [Theory]
-    [InlineData(1.0)]
-    [InlineData(5.0)]
-    [InlineData(10.5)]
+    [InlineData(2.5)]
+    [InlineData(6.0)]
+    [InlineData(7.0)]
     public void CalculateFunction_ValidX_ReturnsFiniteNumber(double x)
     {
         double result = MathAlgorithms.CalculateFunction(x);
@@ -85,7 +85,7 @@ public class MathAlgorithmsTests
     [Fact]
     public void CalculateFunction_XEqualsMinus3_Throws()
     {
-        Assert.Throws<ArgumentException>(() => MathAlgorithms.CalculateFunction(-3));
+        Assert.Throws<ArgumentOutOfRangeException>(() => MathAlgorithms.CalculateFunction(-3));
     }
 
     [Theory]

@@ -33,6 +33,7 @@ public static class MathAlgorithms
     {
         if (x <= 0)
             throw new ArgumentOutOfRangeException(nameof(x), "x должен быть > 0 (логарифм)");
+
         if (Math.Abs(x + 3) < 1e-12)
             throw new ArgumentException("Деление на ноль: x = -3", nameof(x));
 
