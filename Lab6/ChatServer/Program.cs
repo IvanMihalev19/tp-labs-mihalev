@@ -61,6 +61,12 @@ async Task HandleClientAsync(TcpClient tcp)
             string msg = $"[{DateTime.Now:HH:mm:ss}] {nick}: {line}";
             Console.WriteLine(msg);
             await BroadcastAsync(msg);
+            if (line.Equals("/list", StringComparison.OrdinalIgnoreCase))
+            {
+                var list = string.Join(", ", clients.Keys.OrderBy(k => k, StringComparer.OrdinalIgnoreCase));
+                await writer.WriteLineAsync($"*** Онлайн ({clients.Count}): {list} ***");
+                continue;
+            }
         }
     }
     catch (IOException) { }

@@ -37,7 +37,7 @@ while (true)
     Console.WriteLine(response.StartsWith("ERROR ") ? response[6..] : response);
 }
 
-Console.WriteLine("Подключено. Пишите сообщения, /exit — выход.\n");
+Console.WriteLine("Подключено! Команды: /list, /exit\n");
 
 _ = Task.Run(async () =>
 {
