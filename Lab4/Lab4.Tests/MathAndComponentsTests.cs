@@ -35,4 +35,34 @@ public class MathAlgorithmsTests
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => MathAlgorithms.Factorial(n));
     }
+
+    [Fact]
+    public void Fibonacci_ZeroCount_ReturnsEmpty()
+    {
+        var result = MathAlgorithms.Fibonacci(0);
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void Fibonacci_FirstSix_AreCorrect()
+    {
+        var result = MathAlgorithms.Fibonacci(6);
+        Assert.Equal(new long[] { 0, 1, 1, 2, 3, 5 }, result);
+    }
+
+    [Theory]
+    [InlineData(1, new long[] { 0 })]
+    [InlineData(2, new long[] { 0, 1 })]
+    [InlineData(7, new long[] { 0, 1, 1, 2, 3, 5, 8 })]
+    public void Fibonacci_ValidCount_ReturnsExpectedSequence(int count, long[] expected)
+    {
+        var result = MathAlgorithms.Fibonacci(count);
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void Fibonacci_NegativeCount_Throws()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => MathAlgorithms.Fibonacci(-1));
+    }
 }
