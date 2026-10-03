@@ -65,4 +65,29 @@ public class MathAlgorithmsTests
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => MathAlgorithms.Fibonacci(-1));
     }
+
+    [Theory]
+    [InlineData(1.0)]
+    [InlineData(5.0)]
+    [InlineData(10.5)]
+    public void CalculateFunction_ValidX_ReturnsFiniteNumber(double x)
+    {
+        double result = MathAlgorithms.CalculateFunction(x);
+        Assert.True(double.IsFinite(result));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(-5.5)]
+    public void CalculateFunction_NonPositiveX_Throws(double x)
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => MathAlgorithms.CalculateFunction(x));
+    }
+
+    [Fact]
+    public void CalculateFunction_XEqualsMinus3_Throws()
+    {
+        Assert.Throws<ArgumentException>(() => MathAlgorithms.CalculateFunction(-3));
+    }
 }
