@@ -4,11 +4,17 @@ using System.Text;
 Console.Write("Адрес сервера (Enter = localhost): ");
 string host = Console.ReadLine() is { Length: > 0 } h ? h.Trim() : "localhost";
 
+Console.Write("Порт (Enter = 5555): ");
+string? portStr = Console.ReadLine();
+int port = 5555;
+if (!string.IsNullOrWhiteSpace(portStr) && int.TryParse(portStr, out int pp) && pp is > 0 and < 65536)
+    port = pp;
+
 using var client = new TcpClient();
 try
 {
-    Console.WriteLine($"Подключение к {host}:5555...");
-    await client.ConnectAsync(host, 5555);
+    Console.WriteLine($"Подключение к {host}:{port}...");
+    await client.ConnectAsync(host, port);
 }
 catch (SocketException)
 {

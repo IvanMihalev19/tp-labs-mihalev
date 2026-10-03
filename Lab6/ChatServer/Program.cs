@@ -3,7 +3,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-const int Port = 5555;
+int port = 5555;
+if (args.Length > 0 && int.TryParse(args[0], out int p) && p is > 0 and < 65536)
+    port = p;
 
 var logLock = new object();
 const string LogFile = "chat.log";
@@ -21,9 +23,9 @@ void Log(string message)
 
 var clients = new ConcurrentDictionary<string, StreamWriter>(StringComparer.OrdinalIgnoreCase);
 
-var listener = new TcpListener(IPAddress.Any, Port);
+var listener = new TcpListener(IPAddress.Any, port);
 listener.Start();
-Log($"Сервер запущен на порту {Port}. Ctrl+C — остановка.");
+Log($"Сервер запущен на порту {port}. Ctrl+C — остановка.");
 
 while (true)
 {
