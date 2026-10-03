@@ -4,14 +4,11 @@ namespace Lab4.Tests;
 
 public class MathAlgorithmsTests
 {
-    // ========== FACTORIAL ==========
 
     [Fact]
     public void Factorial_OfZero_ReturnsOne()
     {
-        // Arrange + Act
         long result = MathAlgorithms.Factorial(0);
-        // Assert
         Assert.Equal(1, result);
     }
 
@@ -112,5 +109,98 @@ public class MathAlgorithmsTests
     public void CosTaylor_NegativeEps_Throws()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => MathAlgorithms.CosTaylor(1.0, -0.001));
+    }
+}
+public class ComponentTests
+{
+
+    [Fact]
+    public void Processor_ValidData_CreatedSuccessfully()
+    {
+        var cpu = new Processor("Ryzen 7", 35000m, 120, 8, 4.2);
+        Assert.Equal("Ryzen 7", cpu.Name);
+        Assert.Equal(35000m, cpu.Price);
+        Assert.Equal(120, cpu.PowerConsumption);
+        Assert.Equal(8, cpu.Cores);
+        Assert.Equal(4.2, cpu.FrequencyGHz);
+    }
+
+    [Theory]
+    [InlineData(-100)]
+    [InlineData(-0.01)]
+    public void Processor_NegativePrice_Throws(decimal price)
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new Processor("CPU", price, 100, 8, 3.5));
+    }
+
+    [Fact]
+    public void Processor_ZeroCores_Throws()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new Processor("CPU", 10000m, 100, 0, 3.5));
+    }
+
+    [Fact]
+    public void Memory_EmptyType_Throws()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new Memory("RAM", 5000m, 5, 16, "  ", 3200));
+    }
+
+    [Fact]
+    public void Storage_NegativeCapacity_Throws()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new Storage("SSD", 8000m, 6, -500, "SSD", 3500));
+    }
+
+
+    [Fact]
+    public void Computer_AddComponents_CalculatesTotalPriceAndPower()
+    {
+        var pc = new Computer("Gaming");
+        var cpu = new Processor("Ryzen 7", 35000m, 120, 8, 4.2);
+        var ram = new Memory("Kingston", 9000m, 5, 32, "DDR5", 6000);
+        var ssd = new Storage("Samsung", 12000m, 6.5, 2000, "SSD", 7000);
+
+        pc.AddComponent(cpu);
+        pc.AddComponent(ram);
+        pc.AddComponent(ssd);
+
+        Assert.Equal(3, pc.Components.Count);
+        Assert.Equal(56000m, pc.TotalPrice);
+        Assert.Equal(131.5, pc.TotalPowerConsumption, 1);
+    }
+
+    [Fact]
+    public void Computer_Empty_TotalPriceIsZero()
+    {
+        var pc = new Computer("Empty");
+        Assert.Equal(0m, pc.TotalPrice);
+        Assert.Equal(0.0, pc.TotalPowerConsumption);
+        Assert.Empty(pc.Components);
+    }
+
+    [Fact]
+    public void Computer_AddNull_Throws()
+    {
+        var pc = new Computer("Test");
+        Assert.Throws<ArgumentNullException>(() => pc.AddComponent(null!));
+    }
+
+    [Fact]
+    public void Computer_EmptyName_Throws()
+    {
+        Assert.Throws<ArgumentException>(() => new Computer("   "));
+    }
+
+    [Fact]
+    public void Component_ToString_ContainsNameAndPrice()
+    {
+        var cpu = new Processor("TestCPU", 10000m, 65, 6, 3.0);
+        string text = cpu.ToString();
+        Assert.Contains("TestCPU", text);
+        Assert.Contains("Processor", text);
     }
 }
