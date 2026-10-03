@@ -90,4 +90,27 @@ public class MathAlgorithmsTests
     {
         Assert.Throws<ArgumentException>(() => MathAlgorithms.CalculateFunction(-3));
     }
+
+    [Theory]
+    [InlineData(0.0)]
+    [InlineData(1.0)]
+    [InlineData(Math.PI / 2)]
+    [InlineData(-0.7)]
+    public void CosTaylor_MatchesMathCos(double x)
+    {
+        var (sum, _) = MathAlgorithms.CosTaylor(x);
+        Assert.Equal(Math.Cos(x), sum, 1e-5);
+    }
+
+    [Fact]
+    public void CosTaylor_ZeroEps_Throws()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => MathAlgorithms.CosTaylor(1.0, 0));
+    }
+
+    [Fact]
+    public void CosTaylor_NegativeEps_Throws()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => MathAlgorithms.CosTaylor(1.0, -0.001));
+    }
 }
